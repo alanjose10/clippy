@@ -210,6 +210,7 @@ All `templates/` and `static/` content is embedded into the binary at build time
   clip()    { curl -s -X POST http://mac-mini:8080/$1 --data-urlencode "content@-" ... }
   clipget() { curl -s http://mac-mini:8080/$1/$2/raw; }
   ```
+  A reserved `setup` room (auto-created on first run, read-only) could contain these helper snippets pre-populated, so a new user on a restricted machine can open `/{host}/setup`, copy the functions, and paste them into their `.zshrc` / `.bashrc` immediately.
 - **Snippet pinning** — mark a snippet as never-expiring within a room
 
 ---
