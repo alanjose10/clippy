@@ -17,7 +17,7 @@ A lightweight local-network clipboard service running on a Mac Mini via Docker C
 
 | Component | Choice | Reason |
 |---|---|---|
-| Language | Go | Single binary, easy Docker deployment |
+| Language | Go 1.25 | Single binary, easy Docker deployment |
 | Database | SQLite via `modernc.org/sqlite` | Pure Go (no CGO), embedded, no external process |
 | Frontend interactivity | HTMX | Minimal JS, all logic stays server-side in Go |
 | Syntax highlighting | highlight.js | Bundled in binary, works offline |
