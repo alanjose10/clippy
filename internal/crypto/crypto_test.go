@@ -52,7 +52,7 @@ func TestEncryptDecrypt_RoundTrip(t *testing.T) {
 		t.Error("ciphertext should not equal plaintext")
 	}
 
-	decrypted, err := Decrypt(key, ciphertext)
+	decrypted, err := crypto.Decrypt(key, ciphertext)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestDecrypt_WrongKey(t *testing.T) {
 
 	ciphertext, _ := crypto.Encrypt(key1, []byte("secret content"))
 
-	_, err := Decrypt(key2, ciphertext)
+	_, err := crypto.Decrypt(key2, ciphertext)
 	if err == nil {
 		t.Error("expected error when decrypting with wrong key")
 	}
@@ -88,7 +88,7 @@ func TestDecrypt_WrongKey(t *testing.T) {
 func TestDecrypt_TruncatedData(t *testing.T) {
 	key, _ := crypto.DeriveKey([]byte("a-secret-that-is-long-enough-yes!!"))
 
-	_, err := Decrypt(key, []byte("tooshort"))
+	_, err := crypto.Decrypt(key, []byte("tooshort"))
 	if err == nil {
 		t.Error("expected error for truncated ciphertext")
 	}
@@ -97,7 +97,7 @@ func TestDecrypt_TruncatedData(t *testing.T) {
 func TestDecrypt_EmptyData(t *testing.T) {
 	key, _ := crypto.DeriveKey([]byte("a-secret-that-is-long-enough-yes!!"))
 
-	_, err := Decrypt(key, []byte{})
+	_, err := crypto.Decrypt(key, []byte{})
 	if err == nil {
 		t.Error("expected error for empty ciphertext")
 	}
@@ -110,7 +110,7 @@ func TestEncryptDecrypt_EmptyPlaintext(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	decrypted, err := Decrypt(key, ciphertext)
+	decrypted, err := crypto.Decrypt(key, ciphertext)
 	if err != nil {
 		t.Fatal(err)
 	}
