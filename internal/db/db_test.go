@@ -2,18 +2,21 @@ package db_test
 
 import (
 	"bytes"
+	"context"
 	"testing"
 	"time"
 
 	"clippy/internal/db"
 	"clippy/internal/model"
+
+	"github.com/stretchr/testify/require"
 )
 
 // newTestDB opens an in-memory SQLite database for testing.
 // It is closed automatically when the test finishes.
-func newTestDB(t *testing.T) *db.DB {
+func newTestDB(ctx context.Context, t *testing.T) *db.DB {
 	t.Helper()
-	database, err := db.Open(":memory:")
+	database, err := db.Open(ctx, ":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,14 +27,15 @@ func newTestDB(t *testing.T) *db.DB {
 // --- Rooms ---
 
 func TestCreateRoom_And_GetRoom(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
 	room := &model.Room{ID: "work", CreatedAt: time.Now()}
-	if err := database.CreateRoom(room); err != nil {
+	if err := database.CreateRoom(ctx, room); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := database.GetRoom("work")
+	got, err := database.GetRoom(ctx, "work")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,21 +45,21 @@ func TestCreateRoom_And_GetRoom(t *testing.T) {
 }
 
 func TestGetRoom_NotFound(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
-	_, err := database.GetRoom("nonexistent")
-	if err != db.ErrNotFound {
-		t.Errorf("expected ErrNotFound, got %v", err)
-	}
+	_, err := database.GetRoom(ctx, "nonexistent")
+	require.ErrorIs(t, err, db.ErrNotFound)
 }
 
 func TestListRooms(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
-	database.CreateRoom(&model.Room{ID: "home", CreatedAt: time.Now()})
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
+	database.CreateRoom(ctx, &model.Room{ID: "home", CreatedAt: time.Now()})
 
-	rooms, err := database.ListRooms()
+	rooms, err := database.ListRooms(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,25 +69,26 @@ func TestListRooms(t *testing.T) {
 }
 
 func TestDeleteRoom(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
 
-	if err := database.DeleteRoom("work"); err != nil {
+	if err := database.DeleteRoom(ctx, "work"); err != nil {
 		t.Fatal(err)
 	}
 
-	_, err := database.GetRoom("work")
-	if err != db.ErrNotFound {
-		t.Errorf("expected ErrNotFound after delete, got %v", err)
-	}
+	_, err := database.GetRoom(ctx, "work")
+
+	require.ErrorIs(t, err, db.ErrNotFound)
 }
 
 func TestDeleteRoom_CascadesSnippets(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "s1",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -93,20 +98,21 @@ func TestDeleteRoom_CascadesSnippets(t *testing.T) {
 		UpdatedAt:  time.Now(),
 	})
 
-	database.DeleteRoom("work")
+	database.DeleteRoom(ctx, "work")
 
 	// Snippet should be gone too (ON DELETE CASCADE)
-	_, err := database.GetSnippet("s1")
-	if err != db.ErrNotFound {
-		t.Errorf("expected snippet to be deleted with room, got %v", err)
-	}
+	_, err := database.GetSnippet(ctx, "s1")
+
+	require.ErrorIs(t, err, db.ErrNotFound)
 }
 
 // --- Snippets ---
 
 func TestCreateSnippet_And_GetSnippet(t *testing.T) {
-	database := newTestDB(t)
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
+
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
 
 	now := time.Now()
 	s := &model.DBSnippet{
@@ -121,11 +127,11 @@ func TestCreateSnippet_And_GetSnippet(t *testing.T) {
 		UpdatedAt:  now,
 	}
 
-	if err := database.CreateSnippet(s); err != nil {
+	if err := database.CreateSnippet(ctx, s); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := database.GetSnippet("abc123")
+	got, err := database.GetSnippet(ctx, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,20 +153,21 @@ func TestCreateSnippet_And_GetSnippet(t *testing.T) {
 }
 
 func TestGetSnippet_NotFound(t *testing.T) {
-	database := newTestDB(t)
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
 
-	_, err := database.GetSnippet("nonexistent")
-	if err != db.ErrNotFound {
-		t.Errorf("expected ErrNotFound, got %v", err)
-	}
+	_, err := database.GetSnippet(ctx, "nonexistent")
+
+	require.ErrorIs(t, err, db.ErrNotFound)
 }
 
 func TestListSnippets_ReturnsOnlyNonExpired(t *testing.T) {
-	database := newTestDB(t)
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
 
 	// Live snippet
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "live",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -171,7 +178,7 @@ func TestListSnippets_ReturnsOnlyNonExpired(t *testing.T) {
 	})
 
 	// Expired snippet
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "expired",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -181,7 +188,7 @@ func TestListSnippets_ReturnsOnlyNonExpired(t *testing.T) {
 		UpdatedAt:  time.Now(),
 	})
 
-	snippets, err := database.ListSnippets("work")
+	snippets, err := database.ListSnippets(ctx, "work")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,11 +201,12 @@ func TestListSnippets_ReturnsOnlyNonExpired(t *testing.T) {
 }
 
 func TestUpdateSnippet(t *testing.T) {
-	database := newTestDB(t)
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
 
 	now := time.Now()
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "s1",
 		RoomID:     "work",
 		Name:       "original",
@@ -209,17 +217,17 @@ func TestUpdateSnippet(t *testing.T) {
 		UpdatedAt:  now,
 	})
 
-	got, _ := database.GetSnippet("s1")
+	got, _ := database.GetSnippet(ctx, "s1")
 	got.Name = "updated"
 	got.ContentEnc = []byte("new")
 	got.Language = "go"
 	got.UpdatedAt = time.Now()
 
-	if err := database.UpdateSnippet(got); err != nil {
+	if err := database.UpdateSnippet(ctx, got); err != nil {
 		t.Fatal(err)
 	}
 
-	refreshed, _ := database.GetSnippet("s1")
+	refreshed, _ := database.GetSnippet(ctx, "s1")
 	if refreshed.Name != "updated" {
 		t.Errorf("Name: got %q", refreshed.Name)
 	}
@@ -229,10 +237,11 @@ func TestUpdateSnippet(t *testing.T) {
 }
 
 func TestDeleteExpired(t *testing.T) {
-	database := newTestDB(t)
-	database.CreateRoom(&model.Room{ID: "work", CreatedAt: time.Now()})
+	ctx := context.Background()
+	database := newTestDB(ctx, t)
+	database.CreateRoom(ctx, &model.Room{ID: "work", CreatedAt: time.Now()})
 
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "expired1",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -241,7 +250,7 @@ func TestDeleteExpired(t *testing.T) {
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	})
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "expired2",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -250,7 +259,7 @@ func TestDeleteExpired(t *testing.T) {
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	})
-	database.CreateSnippet(&model.DBSnippet{
+	database.CreateSnippet(ctx, &model.DBSnippet{
 		ID:         "live",
 		RoomID:     "work",
 		ContentEnc: []byte("blob"),
@@ -260,7 +269,7 @@ func TestDeleteExpired(t *testing.T) {
 		UpdatedAt:  time.Now(),
 	})
 
-	n, err := database.DeleteExpired()
+	n, err := database.DeleteExpired(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,7 +278,7 @@ func TestDeleteExpired(t *testing.T) {
 	}
 
 	// Live snippet should still be there
-	_, err = database.GetSnippet("live")
+	_, err = database.GetSnippet(ctx, "live")
 	if err != nil {
 		t.Errorf("live snippet should not be deleted: %v", err)
 	}

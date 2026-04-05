@@ -49,23 +49,25 @@ Each snippet belongs to a room and has:
 
 ## Database Schema
 
+All timestamps are stored as **Unix epoch integers** (seconds since 1970-01-01 UTC). This avoids string parsing issues and makes time comparisons and expiry queries simple integer comparisons.
+
 ```sql
 CREATE TABLE rooms (
   id         TEXT PRIMARY KEY,   -- slug: "work", "home"
-  created_at DATETIME NOT NULL,
+  created_at INTEGER NOT NULL,   -- Unix epoch seconds
   pin_hash   TEXT                -- NULL in phase 1; bcrypt hash in phase 2
 );
 
 CREATE TABLE snippets (
-  id          TEXT PRIMARY KEY,                         -- short random ID e.g. "x4kp"
+  id          TEXT PRIMARY KEY,                         -- short random ID e.g. "x4kp9m"
   room_id     TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
   name        TEXT,                                     -- nullable user label
   content_enc BLOB NOT NULL,                            -- nonce || AES-256-GCM ciphertext
   language    TEXT NOT NULL DEFAULT 'plaintext',
   tags        TEXT NOT NULL DEFAULT '',                 -- comma-separated
-  expires_at  DATETIME NOT NULL,
-  created_at  DATETIME NOT NULL,
-  updated_at  DATETIME NOT NULL
+  expires_at  INTEGER NOT NULL,                         -- Unix epoch seconds
+  created_at  INTEGER NOT NULL,                         -- Unix epoch seconds
+  updated_at  INTEGER NOT NULL                          -- Unix epoch seconds
 );
 
 CREATE INDEX idx_snippets_room_expires ON snippets(room_id, expires_at);
