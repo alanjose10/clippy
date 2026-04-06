@@ -16,6 +16,7 @@ import (
 // It is closed automatically when the test finishes.
 func newTestDB(ctx context.Context, t *testing.T) *db.DB {
 	t.Helper()
+	// :memory: is a special db which will only exist during the lifetime of the test
 	database, err := db.Open(ctx, ":memory:")
 	if err != nil {
 		t.Fatal(err)
