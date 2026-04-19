@@ -1,0 +1,45 @@
+{{define "snippet-table"}}
+<div id="snippet-table-container">
+  {{if .AllTags}}
+  <div class="tags" style="margin-bottom: 1rem;">
+    <span class="text-muted">Filter:</span>
+    {{range .AllTags}}
+    <span class="tag" style="cursor:pointer;"
+      hx-get="/{{$.RoomID}}?{{tagQuery . $.ActiveTags}}"
+      hx-target="#snippet-table-container"
+      hx-swap="outerHTML">{{.}}</span>
+    {{end}}
+    {{if .ActiveTags}}
+    <a href="/{{.RoomID}}" class="text-muted" style="font-size:0.8rem;">clear</a>
+    {{end}}
+  </div>
+  {{end}}
+
+  {{if .Snippets}}
+  <ul class="snippet-list">
+    {{range .Snippets}}
+    <li class="snippet-item">
+      <div>
+        <a href="/{{$.RoomID}}/{{.ID}}">
+          {{if .Name}}{{.Name}}{{else}}<em class="text-muted">untitled</em>{{end}}
+        </a>
+        <div class="snippet-meta">
+          {{.Language}} &middot; {{truncate .Content 60}}
+        </div>
+        {{if .Tags}}
+        <div class="tags">
+          {{range .Tags}}<span class="tag">{{.}}</span>{{end}}
+        </div>
+        {{end}}
+      </div>
+      <div class="text-muted" style="white-space:nowrap; font-size:0.8rem;">
+        {{.ExpiryDisplay}}
+      </div>
+    </li>
+    {{end}}
+  </ul>
+  {{else}}
+  <p class="empty-state">No snippets yet. Click "+ New Snippet" to add one.</p>
+  {{end}}
+</div>
+{{end}}

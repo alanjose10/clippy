@@ -1,0 +1,51 @@
+{{define "rooms-page"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>{{template "head" .}}</head>
+<body>
+{{template "nav" .}}
+<main class="container">
+  <h1>Rooms</h1>
+  {{template "rooms-list" .}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "rooms-list"}}
+<div id="rooms-list">
+  {{if .Rooms}}
+  <ul class="room-list">
+    {{range .Rooms}}
+    <li class="room-item">
+      <div>
+        <a href="/{{.ID}}">{{.ID}}</a>
+        <span class="text-muted">{{.SnippetCount}} snippet{{if ne .SnippetCount 1}}s{{end}}</span>
+      </div>
+      <button class="btn btn-danger btn-sm"
+        hx-delete="/_rooms/{{.ID}}"
+        hx-target="#rooms-list"
+        hx-swap="outerHTML"
+        hx-confirm="Delete room '{{.ID}}' and all its snippets?">
+        Delete
+      </button>
+    </li>
+    {{end}}
+  </ul>
+  {{else}}
+  <p class="empty-state">No rooms yet. Create one below.</p>
+  {{end}}
+
+  <div class="card mt-2">
+    <h2>Create Room</h2>
+    <form hx-post="/_rooms" hx-push-url="true" hx-target="body">
+      <div class="field">
+        <label for="room-id">Room name</label>
+        <input type="text" id="room-id" name="id" placeholder="e.g. work, home" pattern="[a-z0-9\-]+" maxlength="50" required>
+        <span class="text-muted mt-1">Lowercase letters, numbers, and hyphens only.</span>
+      </div>
+      <button type="submit" class="btn btn-primary">Create Room</button>
+    </form>
+  </div>
+</div>
+{{end}}

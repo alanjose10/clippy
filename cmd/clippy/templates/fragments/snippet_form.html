@@ -1,0 +1,59 @@
+{{define "snippet-form"}}
+<div id="snippet-form-container">
+  <div class="card">
+    <form hx-post="/{{.RoomID}}" hx-push-url="true" hx-target="body">
+      <div class="form-row">
+        <div class="field">
+          <label>Name (optional)</label>
+          <input type="text" name="name" placeholder="e.g. db-migration">
+        </div>
+        <div class="field">
+          <label>Language</label>
+          <select name="language">
+            <option value="plaintext">plaintext</option>
+            <option value="go">go</option>
+            <option value="javascript">javascript</option>
+            <option value="typescript">typescript</option>
+            <option value="python">python</option>
+            <option value="sql">sql</option>
+            <option value="bash">bash</option>
+            <option value="yaml">yaml</option>
+            <option value="json">json</option>
+            <option value="html">html</option>
+            <option value="css">css</option>
+            <option value="rust">rust</option>
+            <option value="java">java</option>
+            <option value="markdown">markdown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tags (comma-separated)</label>
+          <input type="text" name="tags" placeholder="db, urgent">
+        </div>
+        <div class="field">
+          <label>Expires in</label>
+          <select name="ttl_hours">
+            <option value="1">1 hour</option>
+            <option value="6">6 hours</option>
+            <option value="24" selected>24 hours</option>
+            <option value="168">7 days</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Content</label>
+        <textarea name="content" required placeholder="Paste your code or text here..."></textarea>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Save Snippet</button>
+        <button type="button" class="btn btn-ghost"
+          hx-get="/{{.RoomID}}"
+          hx-target="#snippet-form-container"
+          hx-swap="innerHTML">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{{end}}

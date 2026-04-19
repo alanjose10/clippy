@@ -1,0 +1,49 @@
+{{define "snippet-edit"}}
+<div id="snippet-content">
+  <form hx-put="/{{.RoomID}}/{{.Snippet.ID}}"
+        hx-target="#snippet-content"
+        hx-swap="outerHTML">
+    <div class="form-row">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" name="name" value="{{.Snippet.Name}}" placeholder="optional label">
+      </div>
+      <div class="field">
+        <label>Language</label>
+        <select name="language">
+          {{$lang := .Snippet.Language}}
+          {{range .Languages}}
+          <option value="{{.}}" {{if eq . $lang}}selected{{end}}>{{.}}</option>
+          {{end}}
+        </select>
+      </div>
+      <div class="field">
+        <label>Tags</label>
+        <input type="text" name="tags" value="{{joinTags .Snippet.Tags}}" placeholder="db, urgent">
+      </div>
+      <div class="field">
+        <label>Expires in</label>
+        <select name="ttl_hours">
+          <option value="1">1 hour</option>
+          <option value="6">6 hours</option>
+          <option value="24" selected>24 hours</option>
+          <option value="168">7 days</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Content</label>
+      <textarea name="content" required>{{.Snippet.Content}}</textarea>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-ghost"
+        hx-get="/{{.RoomID}}/{{.Snippet.ID}}"
+        hx-target="#snippet-content"
+        hx-swap="outerHTML">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+{{end}}

@@ -1,0 +1,22 @@
+{{define "room-page"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>{{template "head" .}}</head>
+<body>
+{{template "nav" .}}
+<main class="container">
+  <div class="actions" style="justify-content: space-between; margin-bottom: 1.25rem;">
+    <h1>{{.RoomID}}</h1>
+    <button class="btn btn-primary"
+      hx-get="/{{.RoomID}}/_form"
+      hx-target="#snippet-form-container"
+      hx-swap="innerHTML">
+      + New Snippet
+    </button>
+  </div>
+  <div id="snippet-form-container"></div>
+  {{template "snippet-table" .}}
+</main>
+</body>
+</html>
+{{end}}

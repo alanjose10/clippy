@@ -1,0 +1,21 @@
+{{define "head"}}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clippy</title>
+<link rel="stylesheet" href="/static/highlight.min.css">
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/htmx.min.js" defer></script>
+<script src="/static/highlight.min.js" defer></script>
+<script defer>
+  document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+  document.addEventListener('htmx:afterSwap', () => hljs.highlightAll());
+</script>
+{{end}}
+
+{{define "nav"}}
+<nav>
+  <div class="container">
+    <a href="/_rooms">Clippy</a>
+  </div>
+</nav>
+{{end}}

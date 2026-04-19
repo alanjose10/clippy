@@ -1,0 +1,35 @@
+{{define "snippet-view"}}
+<div id="snippet-content">
+  <div class="actions" style="justify-content: space-between; margin-bottom: 0.75rem;">
+    <div>
+      <span class="text-muted"><a href="/{{.RoomID}}">{{.RoomID}}</a> /</span>
+      <strong>{{if .Snippet.Name}}{{.Snippet.Name}}{{else}}{{.Snippet.ID}}{{end}}</strong>
+      <span class="tag" style="margin-left: 0.5rem;">{{.Snippet.Language}}</span>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost btn-sm"
+        hx-get="/{{.RoomID}}/{{.Snippet.ID}}/edit"
+        hx-target="#snippet-content"
+        hx-swap="outerHTML">
+        Edit
+      </button>
+      <button class="btn btn-ghost btn-sm"
+        onclick="navigator.clipboard.writeText(document.querySelector('#snippet-content code').innerText)">
+        Copy
+      </button>
+      <a href="/{{.RoomID}}/{{.Snippet.ID}}/raw" class="btn btn-ghost btn-sm" target="_blank">Raw</a>
+    </div>
+  </div>
+
+  {{if .Snippet.Tags}}
+  <div class="tags" style="margin-bottom: 0.75rem;">
+    {{range .Snippet.Tags}}<span class="tag">{{.}}</span>{{end}}
+    <span class="text-muted" style="margin-left: auto;">{{.Snippet.ExpiryDisplay}}</span>
+  </div>
+  {{else}}
+  <div class="text-muted" style="margin-bottom: 0.75rem; font-size: 0.8rem;">{{.Snippet.ExpiryDisplay}}</div>
+  {{end}}
+
+  <pre><code class="language-{{.Snippet.Language}}">{{.Snippet.Content}}</code></pre>
+</div>
+{{end}}
