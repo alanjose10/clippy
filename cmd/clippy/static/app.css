@@ -1,0 +1,215 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: #f5f5f5;
+  color: #1a1a1a;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+nav {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.75rem 0;
+}
+
+nav .container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+nav a:hover { text-decoration: underline; }
+
+main { padding: 2rem 0; }
+
+h1 { font-size: 1.4rem; margin-bottom: 1.25rem; }
+h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+
+/* Cards */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #444;
+}
+
+input[type="text"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #3b82f6;
+  border-color: transparent;
+}
+
+textarea {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 160px;
+}
+
+.field { margin-bottom: 1rem; }
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row .field { flex: 1; min-width: 140px; }
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.btn-primary { background: #1a1a1a; color: #fff; }
+.btn-primary:hover { background: #333; }
+
+.btn-danger { background: #dc2626; color: #fff; }
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-ghost {
+  background: transparent;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+}
+.btn-ghost:hover { background: #f0f0f0; }
+
+.btn-sm { padding: 0.25rem 0.65rem; font-size: 0.8rem; }
+
+.actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
+
+/* Snippet list */
+.snippet-list { list-style: none; }
+
+.snippet-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.snippet-item a {
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.snippet-item a:hover { text-decoration: underline; }
+
+.snippet-meta {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+
+.tag {
+  display: inline-block;
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Code block */
+pre {
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+
+pre code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+
+/* Rooms list */
+.room-list { list-style: none; }
+
+.room-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-item a {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.room-item a:hover { text-decoration: underline; }
+
+/* Utility */
+.text-muted { color: #666; font-size: 0.85rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.empty-state { color: #888; font-style: italic; padding: 1.5rem 0; }
+
+/* Flash / notice */
+.notice {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.notice-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.notice-info  { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
